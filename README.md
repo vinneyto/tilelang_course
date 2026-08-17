@@ -45,14 +45,31 @@ uv sync --dev
 uv run python scripts/check_environment.py
 ```
 
+TileLang закреплён на версии `0.1.13`, под API которой написан курс. PyTorch
+ограничен веткой `<2.12`, потому что выбранный `2.11.0` сохраняет wheel для
+macOS 13 arm64, тогда как более новые релизы требуют macOS 14. `uv` установит
+PyTorch, TileLang и pytest из `pyproject.toml`; вручную вызывать
+`pip install` не нужно. После появления `uv.lock` используйте
+`uv sync --dev --locked`, чтобы получить ровно проверенный набор зависимостей.
+
 ### Apple Silicon / Metal
 
-В TileLang 0.1.13 есть готовый wheel для Apple Silicon и Metal backend, поэтому
-на M4 сначала попробуйте обычный `uv sync --dev`. Metal backend моложе CUDA:
-конкретная поддержка инструкций зависит от версии macOS, Xcode и TileLang, а
-GEMM-путь особенно быстро меняется. Если очередное задание не поддерживается,
-его можно пройти на CUDA-машине; сборка TileLang из исходников с `USE_METAL`
-нужна только для свежих изменений backend или разработки самого TileLang.
+В TileLang 0.1.13 есть готовый macOS arm64 wheel и поддерживаемый Metal backend,
+поэтому на M4 используйте обычный `uv sync --dev`. Базовые ядра курса специально
+ограничены Metal-совместимым подмножеством. GEMM использует simdgroup fallback:
+shared-аккумулятор, небольшие тайлы и `num_stages=0`. Это не самый быстрый
+вариант для CUDA, зато он соответствует Metal-тестам TileLang и не требует
+Metal 4 cooperative tensors, доступных только на более новом железе.
+
+Проверьте установку и выполнение готового ядра до решения заданий:
+
+```bash
+uv sync --dev --locked
+uv run pytest -vv tests/test_metal_smoke.py
+```
+
+Smoke-test создаёт MPS-тензоры, компилирует настоящее TileLang-ядро и сравнивает
+результат с PyTorch. На машине без MPS он будет корректно пропущен.
 
 Официальные инструкции:
 
@@ -67,7 +84,8 @@ cd 01_execution_model/01_vector_add
 uv run pytest -vv test_task.py
 ```
 
-Если совместимого accelerator нет, GPU-тест будет пропущен. Структуру курса и
+Если совместимого accelerator нет, GPU-тест будет пропущен. До решения задания
+его тест ожидаемо падает с `NotImplementedError`. Структуру курса и
 синтаксис всех файлов можно проверить без TileLang и GPU:
 
 ```bash
@@ -80,7 +98,7 @@ uv run python scripts/check_course.py
 2. `02_multidimensional_work` — двумерная сетка и broadcasting, записанный явно.
 3. `03_memory_hierarchy` — global/shared/fragment и `T.copy`.
 4. `04_reductions` — параллельная редукция по строкам.
-5. `05_gemm_and_fusion` — тайловый GEMM и fusion эпилога ReLU.
+5. `05_gemm_and_fusion` — переносимый тайловый GEMM и fusion эпилога ReLU.
 6. `06_performance` — generated source, benchmark и сравнение конфигураций.
 
 ## Правила работы с GPU-ядрами

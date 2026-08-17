@@ -1,4 +1,5 @@
 import tilelang
+import torch
 
 
 def candidate_configs() -> list[dict[str, int]]:
@@ -6,7 +7,12 @@ def candidate_configs() -> list[dict[str, int]]:
     raise NotImplementedError
 
 
-def measure(kernel) -> float:
-    """Измерить latency уже скомпилированного JITKernel в миллисекундах."""
+def measure(
+    kernel,
+    args: tuple[torch.Tensor, ...],
+    device: torch.device,
+    warmup: int = 5,
+    repeat: int = 20,
+) -> float:
+    """Переносимо измерить среднюю latency kernel в миллисекундах."""
     raise NotImplementedError
-

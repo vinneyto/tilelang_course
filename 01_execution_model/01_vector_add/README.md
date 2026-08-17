@@ -38,6 +38,9 @@ def build_vector_add(N: int, block: int = 256):
 `build_vector_add(N)` компилирует специализацию и возвращает вызываемый kernel.
 Эту же внешнюю конструкцию используйте в следующих заданиях.
 
+Не задавайте `target="cuda"`: автоматический target выбирает Metal при запуске
+с MPS-тензорами и CUDA при запуске с CUDA-тензорами.
+
 ## Материалы
 
 - [Language Basics: Vector Add](https://tilelang.com/programming_guides/language_basics.html#id6)

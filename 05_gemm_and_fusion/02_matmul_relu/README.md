@@ -15,6 +15,9 @@ memory, а затем снова прочитается. Эпилог внутр
 `build_matmul_relu`. После завершения K-loop, но до записи C, примените
 `T.max(C_local[i, j], 0)` через `T.Parallel(block_M, block_N)`.
 
+Сохраните Metal-совместимые параметры предыдущего задания: shared accumulator,
+`num_stages=0`, тайлы `32 × 32 × 16` и `float32` output.
+
 Не вызывайте отдельное PyTorch `relu` внутри решения.
 
 ## Материалы
@@ -27,4 +30,3 @@ memory, а затем снова прочитается. Эпилог внутр
 ```bash
 uv run pytest -vv test_task.py
 ```
-

@@ -15,7 +15,7 @@ def test_matmul_relu():
     M = N = K = 128
     a = torch.randn(M, K, device=device, dtype=torch.float16)
     b = torch.randn(K, N, device=device, dtype=torch.float16)
-    out = torch.empty(M, N, device=device, dtype=torch.float16)
+    out = torch.empty(M, N, device=device, dtype=torch.float32)
     build_matmul_relu(M, N, K)(a, b, out)
-    torch.testing.assert_close(out, torch.relu(a @ b), rtol=1e-2, atol=1e-2)
-
+    reference = torch.relu(a.to(torch.float32) @ b.to(torch.float32))
+    torch.testing.assert_close(out, reference, rtol=1e-2, atol=1e-2)

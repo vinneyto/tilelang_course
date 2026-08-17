@@ -1,4 +1,5 @@
 import pytest
+import torch
 
 pytest.importorskip("tilelang")
 from task import candidate_configs, measure
@@ -13,14 +14,14 @@ def test_candidate_configs_are_meaningful():
     assert len({tuple(sorted(config.items())) for config in configs}) == len(configs)
 
 
-def test_measure_uses_profiler_contract():
-    class FakeProfiler:
-        def do_bench(self):
-            return 0.125
-
+def test_measure_runs_warmup_and_repetitions():
     class FakeKernel:
-        def get_profiler(self, **kwargs):
-            return FakeProfiler()
+        calls = 0
 
-    assert measure(FakeKernel()) == pytest.approx(0.125)
+        def __call__(self, *args):
+            self.calls += 1
 
+    kernel = FakeKernel()
+    latency = measure(kernel, (), torch.device("cpu"), warmup=2, repeat=3)
+    assert latency > 0
+    assert kernel.calls == 5

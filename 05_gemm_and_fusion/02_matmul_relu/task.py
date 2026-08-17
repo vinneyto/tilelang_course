@@ -6,10 +6,9 @@ def build_matmul_relu(
     M: int,
     N: int,
     K: int,
-    block_M: int = 64,
-    block_N: int = 64,
-    block_K: int = 32,
+    block_M: int = 32,
+    block_N: int = 32,
+    block_K: int = 16,
 ):
-    """Скомпилировать fused tiled GEMM + ReLU."""
+    """Скомпилировать Metal/CUDA-compatible fused tiled GEMM + ReLU."""
     raise NotImplementedError
-

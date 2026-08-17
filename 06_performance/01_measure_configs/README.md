@@ -15,8 +15,10 @@ autotuner.
 
 1. `candidate_configs()` возвращает не менее трёх различных словарей с ключами
    `block_M`, `block_N`, `block_K`, `num_stages`, `threads`;
-2. `measure(kernel)` возвращает положительную latency в миллисекундах, используя
-   `kernel.get_profiler(...).do_bench()`.
+2. `measure(kernel, args, device, warmup=5, repeat=20)` возвращает положительную
+   latency в миллисекундах. Используйте `time.perf_counter`, несколько warmup и
+   обязательную синхронизацию: `torch.mps.synchronize()` для MPS или
+   `torch.cuda.synchronize()` для CUDA.
 
 Затем вручную соберите GEMM для каждой конфигурации и запишите в комментарии к
 `task.py`: GPU, формы матриц, TileLang version и полученные latency. Не делайте
@@ -32,4 +34,3 @@ autotuner.
 ```bash
 uv run pytest -vv test_task.py
 ```
-

@@ -1,0 +1,27 @@
+[project]
+name = "tilelang-course"
+version = "0.1.0"
+description = "Практический вводный курс по TileLang"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.4,<2.12",
+    "tilelang==0.1.13",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3,<9",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["."]
+
+[tool.black]
+target-version = ["py311"]
+
+[tool.uv]
+default-groups = ["dev"]
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]

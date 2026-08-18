@@ -1,0 +1,21 @@
+import sys
+from pathlib import Path
+
+import pytest
+import torch
+
+pytest.importorskip("tilelang")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from course_utils import accelerator_device
+from task import build_matmul
+
+
+def test_tiled_matmul():
+    device = accelerator_device()
+    M = N = K = 128
+    a = torch.randn(M, K, device=device, dtype=torch.float16)
+    b = torch.randn(K, N, device=device, dtype=torch.float16)
+    out = torch.empty(M, N, device=device, dtype=torch.float32)
+    build_matmul(M, N, K)(a, b, out)
+    reference = a.to(torch.float32) @ b.to(torch.float32)
+    torch.testing.assert_close(out, reference, rtol=1e-2, atol=1e-2)

@@ -7,7 +7,7 @@ import torch
 pytest.importorskip("tilelang")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from course_utils import accelerator_device
-from task import build_matmul_relu
+from .task import build_matmul_relu
 
 
 def test_matmul_relu():

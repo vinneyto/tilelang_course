@@ -7,7 +7,7 @@ import torch
 pytest.importorskip("tilelang")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from course_utils import accelerator_device
-from task import build_vector_add
+from .task import build_vector_add
 
 
 @pytest.mark.parametrize("N", [1024, 1003])

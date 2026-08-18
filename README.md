@@ -46,11 +46,11 @@ uv run python scripts/check_environment.py
 ```
 
 TileLang закреплён на версии `0.1.13`, под API которой написан курс. PyTorch
-ограничен веткой `<2.12`, потому что выбранный `2.11.0` сохраняет wheel для
-macOS 13 arm64, тогда как более новые релизы требуют macOS 14. `uv` установит
-PyTorch, TileLang и pytest из `pyproject.toml`; вручную вызывать
-`pip install` не нужно. После появления `uv.lock` используйте
-`uv sync --dev --locked`, чтобы получить ровно проверенный набор зависимостей.
+ограничен веткой `<2.12`; lock-файл выбирает `2.11.0` и содержит готовые
+macOS arm64 wheels для PyTorch и TileLang. `uv` установит PyTorch, TileLang и
+pytest из `pyproject.toml`; вручную вызывать `pip install` не нужно.
+Используйте `uv sync --dev --locked`, чтобы получить ровно зафиксированный
+набор зависимостей.
 
 ### Apple Silicon / Metal
 
@@ -65,6 +65,7 @@ Metal 4 cooperative tensors, доступных только на более н�
 
 ```bash
 uv sync --dev --locked
+uv run python scripts/check_environment.py
 uv run pytest -vv tests/test_metal_smoke.py
 ```
 
@@ -83,6 +84,15 @@ Smoke-test создаёт MPS-тензоры, компилирует насто�
 cd 01_execution_model/01_vector_add
 uv run pytest -vv test_task.py
 ```
+
+Тесты также можно запускать из корня, не меняя рабочий каталог:
+
+```bash
+uv run pytest -vv 01_execution_model/01_vector_add/test_task.py
+```
+
+После решения всех заданий команда `uv run pytest -vv` запускает весь набор
+без конфликтов между одноимёнными `task.py` и `test_task.py`.
 
 Если совместимого accelerator нет, GPU-тест будет пропущен. До решения задания
 его тест ожидаемо падает с `NotImplementedError`. Структуру курса и
